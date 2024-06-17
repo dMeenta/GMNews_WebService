@@ -1,0 +1,19 @@
+{
+  "name": "servicio-proyectofinal",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.js"
+  },
+  "author": "Grupo4",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.10.1"
+  },
+  "devDependencies": {
+    "body-parser": "^1.20.2",
+    "nodemon": "^3.1.3"
+  }
+}
