@@ -63,6 +63,21 @@ app.get("/news", (req, res) => {
     })
 })
 
+app.get("/games", (req, res) => {
+    const query = "SELECT * FROM juegosvista"
+    conexion.query(query, (err, resultado) => {
+        if (err) return console.error(err.message)
+
+        const objeto = {}
+        if (resultado.length > 0) {
+            objeto.listaJuegos = resultado
+            res.json(objeto)
+        } else {
+            res.json("No hay registros")
+        }
+    })
+})
+
 app.post("/usuarios/registrar", (req, res) => {
     const usuarios = {
         nombre: req.body.nombre,
@@ -83,29 +98,39 @@ app.post("/usuarios/registrar", (req, res) => {
 })
 
 app.post('/login', (req, res) => {
-    const { idOnline, password } = req.body;
-    if (!idOnline || !password) {
+    const { idOnline, userPassword } = req.body;
+    if (!idOnline || !userPassword) {
         return res.status(400).json({ message: 'Por favor proporciona ID online y contraseña' });
     }
-
-    const query = `SELECT * FROM usuarios WHERE idOnline = '${idOnline}'`;
+    const query = `SELECT id, idOnline, userPassword, nombre, email, edad, genero FROM usuarios WHERE idOnline='${idOnline}' AND userPassword='${userPassword}' `;
     conexion.query(query, (err, results) => {
-        console.log(idOnline, password);
+        console.log(idOnline, userPassword);
         if (err) {
             console.error('Error querying database:', err);
             return res.status(500).json({ error: 'Error de base de datos' });
         }
-
         if (results.length === 0) {
             return res.status(401).json({ message: 'Usuario no encontrado' });
         }
-
         const usuario = results[0];
         // Validación de la contraseña
-        if (usuario.password !== password) {
+        if (usuario.userPassword !== userPassword) {
             return res.status(401).json({ message: 'Contraseña incorrecta' });
         }
-
-        res.status(200).json({ message: 'Inicio de sesión exitoso', usuario });
+        res.json(usuario);
     });
 });
+
+app.patch("/usuarios/modificar/:id", (req, res) => {
+    const id = req.params.id
+    const { nombre, email } = req.body
+    const query = `UPDATE usuarios SET nombre='${nombre}', email='${email}' WHERE id=${id};`
+    conexion.query(query, (err) => {
+        if (err) {
+            res.json(err.message)
+        } else {
+            res.json("Usuario actualizado correctamente. Inicie sesión nuevamente para mostrar los cambios :)")
+        }
+    })
+    console.log(nombre, email)
+})
