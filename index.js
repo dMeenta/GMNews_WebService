@@ -1,35 +1,32 @@
-const express = require('express')
-const mysql = require('mysql2')
-const bodyParser = require('body-parser')
+import express from 'express';
+import { createConnection } from 'mysql2';
+import bodyParser from 'body-parser';
+import { config } from 'dotenv';
+config()
 
 const app = express()
 app.use(bodyParser.json())
 
-const PUERTO = 3001
+const PORT = 3001
 
-const conexion = mysql.createConnection(
+const conexion = createConnection(
     {
-        host: 'localhost',
-        database: 'Proyectofinal',
-        user: 'root',
-        password: 'DM12345**',
-        port: 3307
+        host: process.env.DB_HOST,
+        database: process.env.DB_NAME,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        port: process.env.DB_PORT
     }
 )
 
-app.listen(PUERTO, () => {
-    console.log("Servidor corriendo en el puerto http://localhost:" + PUERTO)
+app.listen(PORT, () => {
+    console.log("Server running on: http://localhost:" + PORT)
 })
 
 
 conexion.connect(error => {
     if (error) throw error
     console.log("Conexión a la base de datos fue exitosa")
-})
-
-
-app.get("/", (req, res) => {
-    res.send("Web service funcionado...")
 })
 
 app.get("/news", (req, res) => {
